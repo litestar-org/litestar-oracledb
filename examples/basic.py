@@ -29,5 +29,8 @@ class SampleController(Controller):
 
 
 oracledb = OracleDatabasePlugin(
-    config=AsyncDatabaseConfig(pool_config=AsyncPoolConfig(user="app", password="super-secret", dsn="localhost:1521/freepdb1")))  # noqa: S106
+    config=AsyncDatabaseConfig(
+        pool_config=AsyncPoolConfig(user="app", password="super-secret", dsn="localhost:1521/freepdb1")  # noqa: S106
+    )
+)
 app = Litestar(plugins=[oracledb], route_handlers=[SampleController])

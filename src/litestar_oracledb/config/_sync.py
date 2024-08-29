@@ -198,7 +198,7 @@ class SyncDatabaseConfig(GenericDatabaseConfig[ConnectionPool, Connection]):
         self,
         state: State,
         scope: Scope,
-    ) -> Generator[Connection, None]:
+    ) -> Generator[Connection, None, None]:
         """Create a connection instance.
 
         Args:

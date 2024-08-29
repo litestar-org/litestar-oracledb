@@ -82,7 +82,7 @@ def sync_connection_pool(
 
 
 @pytest.fixture(name="sync_plugin")
-def sync_config(sync_connection_pool: ConnectionPool) -> Generator[SyncDatabaseConfig,None,None]:
+def sync_config(sync_connection_pool: ConnectionPool) -> Generator[SyncDatabaseConfig, None, None]:
     """App fixture.
 
     Returns:
@@ -95,7 +95,7 @@ def sync_config(sync_connection_pool: ConnectionPool) -> Generator[SyncDatabaseC
 
 
 @pytest.fixture(name="async_config")
-def async_config(async_connection_pool: AsyncConnectionPool) -> Generator[AsyncDatabaseConfig,None,None]:
+def async_config(async_connection_pool: AsyncConnectionPool) -> Generator[AsyncDatabaseConfig, None, None]:
     """App fixture.
 
     Returns:
@@ -131,7 +131,7 @@ async def plugin(request: FixtureRequest) -> AsyncGenerator[OracleDatabasePlugin
 
 
 @pytest.fixture(name="app")
-def fx_app(plugin: OracleDatabasePlugin) -> Generator[Litestar,None, None]:
+def fx_app(plugin: OracleDatabasePlugin) -> Generator[Litestar, None, None]:
     """App fixture.
 
     Returns:
