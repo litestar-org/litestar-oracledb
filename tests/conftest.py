@@ -36,14 +36,14 @@ def anyio_backend() -> str:
 
 
 @pytest.fixture(name="async_connection_pool", scope="session")
-async def async_connection_pool(
+def async_connection_pool(
     oracle_docker_ip: str,
     oracle_user: str,
     oracle_password: str,
     oracle_service_name: str,
     oracle_port: int,
     oracle_service: None,
-) -> AsyncGenerator[AsyncConnectionPool, None]:
+) -> Generator[AsyncConnectionPool, None, None]:
     """App fixture.
 
     Returns:
@@ -82,27 +82,27 @@ def sync_connection_pool(
 
 
 @pytest.fixture(name="sync_plugin")
-async def sync_config(sync_connection_pool: ConnectionPool) -> SyncDatabaseConfig:
+def sync_config(sync_connection_pool: ConnectionPool) -> Generator[SyncDatabaseConfig,None,None]:
     """App fixture.
 
     Returns:
         An application instance, configured via plugin.
     """
 
-    return SyncDatabaseConfig(
+    yield SyncDatabaseConfig(
         pool_instance=sync_connection_pool,
     )
 
 
 @pytest.fixture(name="async_config")
-async def async_config(async_connection_pool: AsyncConnectionPool) -> AsyncDatabaseConfig:
+def async_config(async_connection_pool: AsyncConnectionPool) -> Generator[AsyncDatabaseConfig,None,None]:
     """App fixture.
 
     Returns:
         An application instance, configured via plugin.
     """
 
-    return AsyncDatabaseConfig(
+    yield AsyncDatabaseConfig(
         pool_instance=async_connection_pool,
     )
 
@@ -131,10 +131,10 @@ async def plugin(request: FixtureRequest) -> AsyncGenerator[OracleDatabasePlugin
 
 
 @pytest.fixture(name="app")
-def fx_app(plugin: OracleDatabasePlugin) -> Litestar:
+def fx_app(plugin: OracleDatabasePlugin) -> Generator[Litestar,None, None]:
     """App fixture.
 
     Returns:
         An application instance, configured via plugin.
     """
-    return Litestar(plugins=[plugin], route_handlers=[SampleController])
+    yield Litestar(plugins=[plugin], route_handlers=[SampleController])
