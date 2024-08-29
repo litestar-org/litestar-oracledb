@@ -70,7 +70,7 @@ napoleon_attr_annotations = True
 
 autoclass_content = "class"
 autodoc_class_signature = "separated"
-autodoc_default_options = {"special-members": "__init__", "show-inheritance": True, "members": True}  # type: ignore  # noqa: PGH003
+autodoc_default_options = {"special-members": "__init__", "show-inheritance": True, "members": True}
 autodoc_member_order = "bysource"
 autodoc_typehints_format = "short"
 autodoc_type_aliases: dict[str, str] = {}
@@ -106,7 +106,7 @@ brand_colors = {
     "--brand-light": {"rgb": "235, 221, 221", "hex": "#ebdddd"},
 }
 
-html_theme_options = {  # type: ignore  # noqa: PGH003
+html_theme_options = {
     "logo_target": "/",
     "announcement": "This documentation is currently under development.",
     "github_url": "https://github.com/litestar-org/litestar-oracledb",
