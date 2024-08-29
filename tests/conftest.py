@@ -36,14 +36,14 @@ def anyio_backend() -> str:
 
 
 @pytest.fixture(name="async_connection_pool", scope="session")
-def async_connection_pool(
+async def async_connection_pool(
     oracle_docker_ip: str,
     oracle_user: str,
     oracle_password: str,
     oracle_service_name: str,
     oracle_port: int,
     oracle_service: None,
-) -> Generator[AsyncConnectionPool, None, None]:
+) -> AsyncGenerator[AsyncConnectionPool, None]:
     """App fixture.
 
     Returns:
@@ -59,14 +59,14 @@ def async_connection_pool(
 
 
 @pytest.fixture(name="sync_connection_pool", scope="session")
-def sync_connection_pool(
+async def sync_connection_pool(
     oracle_docker_ip: str,
     oracle_user: str,
     oracle_password: str,
     oracle_service_name: str,
     oracle_port: int,
     oracle_service: None,
-) -> Generator[ConnectionPool, None, None]:
+) -> AsyncGenerator[ConnectionPool, None]:
     """App fixture.
 
     Returns:
