@@ -97,9 +97,9 @@ class GenericDatabaseConfig(Generic[PoolT, ConnectionT]):
 
     If set, the plugin will use the provided pool rather than instantiate one.
     """
-    before_send_handler: (
-        BeforeMessageSendHookHandler | None | Literal["autocommit", "autocommit_include_redirects"] | EmptyType
-    ) = Empty
+    before_send_handler: BeforeMessageSendHookHandler | None | Literal["autocommit", "autocommit_include_redirects"] = (
+        None
+    )
     """Handler to call before the ASGI message is sent.
 
     The handler should handle closing the session stored in the ASGI scope, if it's still open, and committing and

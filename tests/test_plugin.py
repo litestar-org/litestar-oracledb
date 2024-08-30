@@ -18,11 +18,10 @@ async def test_lifespan(
     @get("/")
     async def health_check(db_connection: AsyncConnection) -> float:
         """Check database available and returns random number."""
-        cursor = db_connection.cursor()
-        await cursor.execute("select 1 as the_one from dual")
-        r = await cursor.fetchall()
-        cursor.close()
-        return r[0]["the_one"]  # type: ignore
+        with db_connection.cursor() as cursor:
+            await cursor.execute("select 1 as the_one from dual")
+            r = await cursor.fetchall()
+            return r[0]["the_one"]  # type: ignore
 
     @asynccontextmanager
     async def lifespan(_app: Litestar) -> AsyncGenerator[None, Any]:
