@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Optional, cast
 
 from litestar.constants import HTTP_RESPONSE_START
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.types import Empty, EmptyType
 from litestar.utils.dataclass import simple_asdict
 from oracledb import create_pool_async as oracledb_create_pool
 from oracledb.connection import AsyncConnection
@@ -26,7 +25,7 @@ if TYPE_CHECKING:
 
     from litestar import Litestar
     from litestar.datastructures.state import State
-    from litestar.types import EmptyType, Message, Scope
+    from litestar.types import Message, Scope
 
 
 def default_handler_maker(
@@ -122,7 +121,7 @@ class AsyncPoolConfig(GenericPoolConfig[AsyncConnectionPool, AsyncConnection]):
 class AsyncDatabaseConfig(GenericDatabaseConfig[AsyncConnectionPool, AsyncConnection]):
     """Async Oracle database Configuration."""
 
-    pool_config: AsyncPoolConfig | None | EmptyType = Empty
+    pool_config: AsyncPoolConfig | None = None
     """Oracle Pool configuration"""
 
     def __post_init__(self) -> None:
@@ -145,7 +144,7 @@ class AsyncDatabaseConfig(GenericDatabaseConfig[AsyncConnectionPool, AsyncConnec
             A string keyed dict of config kwargs for the Asyncpg :func:`create_pool <oracledb.pool.create_pool>`
             function.
         """
-        if self.pool_config is not None and self.pool_config != Empty:
+        if self.pool_config is not None:
             return simple_asdict(self.pool_config, exclude_empty=True, convert_nested=False)
         msg = "'pool_config' methods can not be used when a 'pool_instance' is provided."
         raise ImproperlyConfiguredException(msg)
@@ -192,7 +191,7 @@ class AsyncDatabaseConfig(GenericDatabaseConfig[AsyncConnectionPool, AsyncConnec
         try:
             yield
         finally:
-            await db_pool.close(force=True)
+            await db_pool.close()
 
     async def provide_connection(
         self,
