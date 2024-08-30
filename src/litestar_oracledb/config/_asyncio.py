@@ -224,3 +224,16 @@ class AsyncDatabaseConfig(GenericDatabaseConfig[AsyncConnectionPool, AsyncConnec
             async with pool.acquire() as connection:
                 set_scope_state(scope, self.connection_scope_key, connection)
                 yield connection
+
+    @asynccontextmanager
+    async def get_connection(
+        self,
+    ) -> AsyncGenerator[AsyncConnection, None]:
+        """Create a connection instance.
+
+        Returns:
+            A connection instance.
+        """
+        pool = await self.create_pool()
+        async with pool.acquire() as connection:
+            yield connection

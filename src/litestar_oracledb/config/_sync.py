@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, contextmanager
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Generator, Optional, cast
 
@@ -193,7 +193,7 @@ class SyncDatabaseConfig(GenericDatabaseConfig[ConnectionPool, Connection]):
         try:
             yield
         finally:
-            db_pool.close(force=True)
+            db_pool.close()
 
     def provide_connection(
         self,
@@ -219,3 +219,16 @@ class SyncDatabaseConfig(GenericDatabaseConfig[ConnectionPool, Connection]):
             with pool.acquire() as connection:
                 set_scope_state(scope, self.connection_scope_key, connection)
                 yield connection
+
+    @contextmanager
+    def get_connection(
+        self,
+    ) -> Generator[Connection, None, None]:
+        """Create a connection instance.
+
+        Returns:
+            A connection instance.
+        """
+        pool = self.create_pool()
+        with pool.acquire() as connection:
+            yield connection
