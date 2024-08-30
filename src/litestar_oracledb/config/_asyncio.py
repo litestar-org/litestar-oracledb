@@ -50,8 +50,10 @@ def default_handler_maker(
             None
         """
         connection = cast("AsyncConnection | None", get_scope_state(scope, connection_scope_key))
-        if connection and message["type"] in SESSION_TERMINUS_ASGI_EVENTS:
-            await connection.close()
+        if connection is not None and message["type"] in SESSION_TERMINUS_ASGI_EVENTS and connection._impl is not None:  # noqa: SLF001
+            # checks to to see if connected without raising an exception: https://github.com/oracle/python-oracledb/blob/main/src/oracledb/connection.py#L80
+            if connection._impl is not None:  # noqa: SLF001
+                await connection.close()
             delete_scope_state(scope, connection_scope_key)
 
     return handler
@@ -97,7 +99,7 @@ def autocommit_handler_maker(
         """
         connection = cast("AsyncConnection | None", get_scope_state(scope, connection_scope_key))
         try:
-            if connection is not None and message["type"] == HTTP_RESPONSE_START:
+            if connection is not None and message["type"] == HTTP_RESPONSE_START and connection._impl is not None:  # noqa: SLF001
                 if (message["status"] in commit_range or message["status"] in extra_commit_statuses) and message[
                     "status"
                 ] not in extra_rollback_statuses:
@@ -105,7 +107,12 @@ def autocommit_handler_maker(
                 else:
                     await connection.rollback()
         finally:
-            if connection and message["type"] in SESSION_TERMINUS_ASGI_EVENTS:
+            # checks to to see if connected without raising an exception: https://github.com/oracle/python-oracledb/blob/main/src/oracledb/connection.py#L80
+            if (
+                connection is not None
+                and message["type"] in SESSION_TERMINUS_ASGI_EVENTS
+                and connection._impl is not None  # noqa: SLF001
+            ):
                 await connection.close()
                 delete_scope_state(scope, connection_scope_key)
 
