@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, cast, TypeVar, Generic
 
 from litestar.di import Provide
 from litestar.plugins import InitPluginProtocol
@@ -12,16 +12,19 @@ if TYPE_CHECKING:
     from litestar_oracledb.config import AsyncDatabaseConfig, SyncDatabaseConfig
 
 
+ConfigT = TypeVar("ConfigT", bound="AsyncDatabaseConfig | SyncDatabaseConfig")
+
+
 class SlotsBase:
     __slots__ = ("_config",)
 
 
-class OracleDatabasePlugin(InitPluginProtocol, SlotsBase):
+class OracleDatabasePlugin(InitPluginProtocol, SlotsBase, Generic[ConfigT]):
     """Oracledb plugin."""
 
     __slots__ = ()
 
-    def __init__(self, config: SyncDatabaseConfig | AsyncDatabaseConfig) -> None:
+    def __init__(self, config: ConfigT) -> None:
         """Initialize ``oracledb``.
 
         Args:
@@ -30,7 +33,7 @@ class OracleDatabasePlugin(InitPluginProtocol, SlotsBase):
         self._config = config
 
     @property
-    def config(self) -> SyncDatabaseConfig | AsyncDatabaseConfig:
+    def config(self) -> ConfigT:
         """Return the plugin config.
 
         Returns:
