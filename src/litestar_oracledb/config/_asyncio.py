@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Optional, cast
 
 from litestar.constants import HTTP_RESPONSE_START
+from litestar.di import Provide
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.utils.dataclass import simple_asdict
 from oracledb import create_pool_async as oracledb_create_pool
@@ -15,8 +16,8 @@ from litestar_oracledb._utils import delete_scope_state, get_scope_state, set_sc
 from litestar_oracledb.config._common import (
     CONNECTION_SCOPE_KEY,
     SESSION_TERMINUS_ASGI_EVENTS,
-    GenericDatabaseConfig,
-    GenericPoolConfig,
+    GenericOracleDatabaseConfig,
+    GenericOraclePoolConfig,
 )
 
 if TYPE_CHECKING:
@@ -120,15 +121,15 @@ def autocommit_handler_maker(
 
 
 @dataclass
-class AsyncPoolConfig(GenericPoolConfig[AsyncConnectionPool, AsyncConnection]):
+class AsyncOraclePoolConfig(GenericOraclePoolConfig[AsyncConnectionPool, AsyncConnection]):
     """Async Oracle Pool Config"""
 
 
 @dataclass
-class AsyncDatabaseConfig(GenericDatabaseConfig[AsyncConnectionPool, AsyncConnection]):
+class AsyncOracleDatabaseConfig(GenericOracleDatabaseConfig[AsyncConnectionPool, AsyncConnection]):
     """Async Oracle database Configuration."""
 
-    pool_config: AsyncPoolConfig | None = None
+    pool_config: AsyncOraclePoolConfig | None = None
     """Oracle Pool configuration"""
 
     def __post_init__(self) -> None:
@@ -168,6 +169,18 @@ class AsyncDatabaseConfig(GenericDatabaseConfig[AsyncConnectionPool, AsyncConnec
             "AsyncConnectionPool": AsyncConnectionPool,
         }
 
+    @property
+    def dependencies(self) -> dict[str, Any]:
+        """Return the plugin's signature namespace.
+
+        Returns:
+            A string keyed dict of names to be added to the namespace for signature forward reference resolution.
+        """
+        return {
+            self.pool_dependency_key: Provide(self.provide_pool, sync_to_thread=False),
+            self.connection_dependency_key: Provide(self.provide_connection),
+        }
+
     async def create_pool(self) -> AsyncConnectionPool:
         """Return a pool. If none exists yet, create one.
 
@@ -198,7 +211,7 @@ class AsyncDatabaseConfig(GenericDatabaseConfig[AsyncConnectionPool, AsyncConnec
         try:
             yield
         finally:
-            await db_pool.close()
+            await db_pool.close(force=True)
 
     async def provide_connection(
         self,
@@ -218,7 +231,9 @@ class AsyncDatabaseConfig(GenericDatabaseConfig[AsyncConnectionPool, AsyncConnec
             "Optional[AsyncConnection]",
             get_scope_state(scope, self.connection_scope_key),
         )
-        if connection is None:
+        if connection is not None:
+            yield connection
+        else:
             pool = cast("AsyncConnectionPool", state.get(self.pool_app_state_key))
 
             async with pool.acquire() as connection:

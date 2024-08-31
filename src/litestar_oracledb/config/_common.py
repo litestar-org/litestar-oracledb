@@ -28,7 +28,7 @@ PoolT = TypeVar("PoolT", bound="ConnectionPool | AsyncConnectionPool")
 
 
 @dataclass
-class GenericPoolConfig(Generic[PoolT, ConnectionT]):
+class GenericOraclePoolConfig(Generic[PoolT, ConnectionT]):
     conn_class: type[ConnectionT] | EmptyType = Empty
     dsn: str | EmptyType = Empty
     pool: PoolT | EmptyType = Empty
@@ -79,7 +79,7 @@ class GenericPoolConfig(Generic[PoolT, ConnectionT]):
 
 
 @dataclass
-class GenericDatabaseConfig(Generic[PoolT, ConnectionT]):
+class GenericOracleDatabaseConfig(Generic[PoolT, ConnectionT]):
     """Oracle database Configuration."""
 
     pool_app_state_key: str = "db_pool"
