@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-from litestar_oracledb.config._asyncio import AsyncDatabaseConfig, AsyncPoolConfig
-from litestar_oracledb.config._common import GenericDatabaseConfig, GenericPoolConfig
-from litestar_oracledb.config._sync import SyncDatabaseConfig, SyncPoolConfig
+from litestar_oracledb.config._asyncio import AsyncOracleDatabaseConfig, AsyncOraclePoolConfig
+from litestar_oracledb.config._common import GenericOracleDatabaseConfig, GenericOraclePoolConfig
+from litestar_oracledb.config._sync import SyncOracleDatabaseConfig, SyncOraclePoolConfig
 
 __all__ = (
-    "SyncDatabaseConfig",
-    "SyncPoolConfig",
-    "AsyncDatabaseConfig",
-    "AsyncPoolConfig",
-    "GenericDatabaseConfig",
-    "GenericPoolConfig",
+    "SyncOracleDatabaseConfig",
+    "SyncOraclePoolConfig",
+    "AsyncOracleDatabaseConfig",
+    "AsyncOraclePoolConfig",
+    "GenericOracleDatabaseConfig",
+    "GenericOraclePoolConfig",
 )

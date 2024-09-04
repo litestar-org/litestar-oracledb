@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from litestar import Controller, Litestar, Request, get
 
-from litestar_oracledb import AsyncDatabaseConfig, AsyncPoolConfig, OracleDatabasePlugin
+from litestar_oracledb import AsyncOracleDatabaseConfig, AsyncOraclePoolConfig, OracleDatabasePlugin
 
 if TYPE_CHECKING:
     from oracledb import AsyncConnection
@@ -24,8 +24,8 @@ class SampleController(Controller):
 
 
 oracledb = OracleDatabasePlugin(
-    config=AsyncDatabaseConfig(
-        pool_config=AsyncPoolConfig(user="system", password="super-secret", dsn="localhost:1513/FREEPDB1")  # noqa: S106
+    config=AsyncOracleDatabaseConfig(
+        pool_config=AsyncOraclePoolConfig(user="system", password="super-secret", dsn="localhost:1513/FREEPDB1")  # noqa: S106
     )
 )
 app = Litestar(plugins=[oracledb], route_handlers=[SampleController])
